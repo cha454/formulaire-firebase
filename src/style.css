@@ -1,14 +1,15 @@
 :root {
-  --primary: #6366f1;
-  --primary-hover: #4f46e5;
-  --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  --text-main: #1e293b;
-  --text-muted: #64748b;
-  --error: #ef4444;
-  --success: #22c55e;
+  --primary: #1e40af; /* Bleu Royal Professionnel */
+  --primary-hover: #1e3a8a;
+  --bg-gradient: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+  --text-main: #0f172a; /* Bleu Nuit Profond */
+  --text-muted: #475569;
+  --error: #be123c;
+  --success: #15803d;
   --white: #ffffff;
-  --input-bg: #f8fafc;
-  --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --input-bg: #ffffff;
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --container-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 }
 
 .marquee-container {
@@ -54,7 +55,7 @@ body {
   background-color: var(--white);
   padding: 3rem;
   border-radius: 24px;
-  box-shadow: var(--shadow);
+  box-shadow: var(--container-shadow);
   width: 90%;
   max-width: 480px;
   margin: 2rem auto;
