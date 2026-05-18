@@ -80,11 +80,6 @@ select.invalid:focus {
   to { transform: rotate(360deg); }
 }
 
-button:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
 label {
   display: block;
   margin-bottom: 0.5rem;
