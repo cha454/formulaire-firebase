@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { db, auth } from './firebase'; // Import de la base de données et auth
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore'; // Fonctions Firestore
-import { signInAnonymously, onAuthStateChanged } from 'firebase/auth'; // Authentification
+import { db, auth } from './firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 
 function App() {
   const [formData, setFormData] = useState({
@@ -12,9 +12,10 @@ function App() {
     sexe: 'femme',
   });
 
+  const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const [message, setMessage] = useState('');
-  const [user, setUser] = useState(null);
 
   // Gestion de l'authentification au chargement
   useEffect(() => {
@@ -23,11 +24,7 @@ function App() {
       return;
     }
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
-        console.log("Utilisateur connecté anonymement:", currentUser.uid);
-      } else {
-        // Tentative de connexion anonyme pour respecter les règles Firestore
+      if (!currentUser) {
         signInAnonymously(auth).catch((error) => {
           console.error("Erreur d'authentification anonyme:", error);
         });
@@ -37,60 +34,94 @@ function App() {
     return () => unsubscribe();
   }, []);
 
+  const validateField = (name, value) => {
+    let error = '';
+    switch (name) {
+      case 'nom':
+      case 'prenom':
+        if (value.trim().length < 2) error = 'Minimum 2 caractères.';
+        break;
+      case 'email':
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) error = 'Email invalide.';
+        break;
+      case 'motDePasse':
+        if (value.length < 6) error = 'Minimum 6 caractères.';
+        break;
+      default:
+        break;
+    }
+    return error;
+  };
+
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    
+    // Mise à jour des données
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
+    // Validation en temps réel
+    const error = validateField(name, value);
+    setErrors((prev) => ({ ...prev, [name]: error }));
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    
+    // Validation finale avant envoi
+    const newErrors = {};
+    Object.keys(formData).forEach(key => {
+      const error = validateField(key, formData[key]);
+      if (error) newErrors[key] = error;
+    });
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
     setIsSubmitting(true);
     setMessage('');
 
-    // Vérification de l'auth avant envoi
     if (!auth.currentUser) {
       try {
         await signInAnonymously(auth);
       } catch (error) {
-        setMessage("Erreur d'authentification. Impossible d'envoyer les données.");
+        setMessage("Erreur d'authentification.");
         setIsSubmitting(false);
         return;
       }
     }
 
     try {
-      // Ajout des données dans la nouvelle collection "formulaire_contact"
-      const docRef = await addDoc(collection(db, "formulaire_contact"), {
-        nom: formData.nom,
-        prenom: formData.prenom,
-        email: formData.email,
-        sexe: formData.sexe,
-        createdAt: serverTimestamp(), // Utilisation du timestamp serveur
-        userId: auth.currentUser.uid // Référence de l'utilisateur
+      await addDoc(collection(db, "formulaire_contact"), {
+        ...formData,
+        createdAt: serverTimestamp(),
+        userId: auth.currentUser.uid
       });
 
-      console.log("Document écrit avec l'ID: ", docRef.id);
-      alert(`Merci ! Votre demande a été enregistrée (ID: ${docRef.id})`);
-      
-      // Réinitialisation du formulaire
-      setFormData({
-        nom: '',
-        prenom: '',
-        email: '',
-        motDePasse: '',
-        sexe: 'femme',
-      });
-      setMessage('Données envoyées avec succès vers la nouvelle collection !');
+      setSubmitted(true);
+      setFormData({ nom: '', prenom: '', email: '', motDePasse: '', sexe: 'femme' });
     } catch (error) {
-      console.error("Erreur lors de l'ajout du document: ", error);
-      setMessage("Erreur lors de l'envoi. Vérifiez les règles Firestore de votre projet 'cdoc-manager-82cbd'.");
+      console.error("Erreur:", error);
+      setMessage("Erreur lors de l'envoi. Veuillez réessayer.");
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (submitted) {
+    return (
+      <div className="container">
+        <div className="success-container">
+          <div className="success-icon">✓</div>
+          <h1>Merci !</h1>
+          <p>Votre demande a été enregistrée avec succès.</p>
+          <button onClick={() => setSubmitted(false)}>Retour au formulaire</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container">
@@ -98,87 +129,83 @@ function App() {
       
       {message && (
         <div style={{ 
-          padding: '10px', 
-          marginBottom: '20px', 
-          borderRadius: '4px', 
-          backgroundColor: message.includes('Erreur') ? '#ffebee' : '#e8f5e9',
-          color: message.includes('Erreur') ? '#c62828' : '#2e7d32',
-          textAlign: 'center',
-          fontSize: '0.9rem'
+          padding: '10px', marginBottom: '20px', borderRadius: '4px', 
+          backgroundColor: '#ffebee', color: '#c62828', textAlign: 'center'
         }}>
           {message}
         </div>
       )}
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} noValidate>
         <div className="form-group">
           <label htmlFor="nom">Nom</label>
           <input
-            id="nom"
-            name="nom"
-            type="text"
+            id="nom" name="nom" type="text"
+            className={errors.nom ? 'invalid' : ''}
             placeholder="Votre nom"
             value={formData.nom}
             onChange={handleChange}
             required
           />
+          <div className="error-message">{errors.nom}</div>
         </div>
 
         <div className="form-group">
           <label htmlFor="prenom">Prénom</label>
           <input
-            id="prenom"
-            name="prenom"
-            type="text"
+            id="prenom" name="prenom" type="text"
+            className={errors.prenom ? 'invalid' : ''}
             placeholder="Votre prénom"
             value={formData.prenom}
             onChange={handleChange}
             required
           />
+          <div className="error-message">{errors.prenom}</div>
         </div>
 
         <div className="form-group">
           <label htmlFor="email">Email</label>
           <input
-            id="email"
-            name="email"
-            type="email"
+            id="email" name="email" type="email"
+            className={errors.email ? 'invalid' : ''}
             placeholder="exemple@mail.com"
             value={formData.email}
             onChange={handleChange}
             required
           />
+          <div className="error-message">{errors.email}</div>
         </div>
 
         <div className="form-group">
           <label htmlFor="motDePasse">Mot de passe</label>
           <input
-            id="motDePasse"
-            name="motDePasse"
-            type="password"
-            placeholder="••••••••"
+            id="motDePasse" name="motDePasse" type="password"
+            className={errors.motDePasse ? 'invalid' : ''}
+            placeholder="Minimum 6 caractères"
             value={formData.motDePasse}
             onChange={handleChange}
             required
           />
+          <div className="error-message">{errors.motDePasse}</div>
         </div>
 
         <div className="form-group">
           <label htmlFor="sexe">Sexe</label>
-          <select
-            id="sexe"
-            name="sexe"
-            value={formData.sexe}
-            onChange={handleChange}
-          >
+          <select id="sexe" name="sexe" value={formData.sexe} onChange={handleChange}>
             <option value="femme">Femme</option>
             <option value="homme">Homme</option>
             <option value="autre">Autre</option>
           </select>
+          <div className="error-message"></div>
         </div>
 
-        <button type="submit" disabled={isSubmitting}>
-          {isSubmitting ? 'Envoi en cours...' : "Envoyer ma demande"}
+        <button type="submit" disabled={isSubmitting || Object.values(errors).some(e => e)}>
+          {isSubmitting ? (
+            <>
+              <span className="spinner"></span>
+              Envoi en cours...
+            </>
+          ) : "Envoyer ma demande"}
         </button>
       </form>
     </div>
