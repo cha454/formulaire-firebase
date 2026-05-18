@@ -18,6 +18,10 @@ function App() {
 
   // Gestion de l'authentification au chargement
   useEffect(() => {
+    if (!auth) {
+      setMessage("Erreur : Le SDK Firebase n'est pas initialisé. Vérifiez vos variables d'environnement.");
+      return;
+    }
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
