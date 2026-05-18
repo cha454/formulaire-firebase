@@ -56,19 +56,13 @@ function App() {
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    
-    // Mise à jour des données
     setFormData((prev) => ({ ...prev, [name]: value }));
-
-    // Validation en temps réel
     const error = validateField(name, value);
     setErrors((prev) => ({ ...prev, [name]: error }));
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
-    // Validation finale avant envoi
     const newErrors = {};
     Object.keys(formData).forEach(key => {
       const error = validateField(key, formData[key]);
@@ -99,7 +93,6 @@ function App() {
         createdAt: serverTimestamp(),
         userId: auth.currentUser.uid
       });
-
       setSubmitted(true);
       setFormData({ nom: '', prenom: '', email: '', motDePasse: '', sexe: 'femme' });
     } catch (error) {
@@ -114,9 +107,9 @@ function App() {
     return (
       <div className="container">
         <div className="success-container">
-          <div className="success-icon">✓</div>
-          <h1>Merci !</h1>
-          <p>Votre demande a été enregistrée avec succès.</p>
+          <div className="success-icon-wrapper">✓</div>
+          <h1>Succès !</h1>
+          <p className="subtitle">Votre demande a été enregistrée avec succès. Nous vous contacterons bientôt.</p>
           <button onClick={() => setSubmitted(false)}>Retour au formulaire</button>
         </div>
       </div>
@@ -125,12 +118,14 @@ function App() {
 
   return (
     <div className="container">
-      <h1>Contact & Devis</h1>
+      <h1>Inscription</h1>
+      <p className="subtitle">Veuillez remplir les informations ci-dessous pour nous rejoindre.</p>
       
       {message && (
         <div style={{ 
-          padding: '10px', marginBottom: '20px', borderRadius: '4px', 
-          backgroundColor: '#ffebee', color: '#c62828', textAlign: 'center'
+          padding: '12px', marginBottom: '24px', borderRadius: '12px', 
+          backgroundColor: '#fff1f2', color: '#e11d48', textAlign: 'center',
+          fontSize: '0.9rem', fontWeight: '500', border: '1px solid #ffe4e6'
         }}>
           {message}
         </div>
@@ -142,7 +137,7 @@ function App() {
           <input
             id="nom" name="nom" type="text"
             className={errors.nom ? 'invalid' : ''}
-            placeholder="Votre nom"
+            placeholder="Ex: Dupont"
             value={formData.nom}
             onChange={handleChange}
             required
@@ -155,7 +150,7 @@ function App() {
           <input
             id="prenom" name="prenom" type="text"
             className={errors.prenom ? 'invalid' : ''}
-            placeholder="Votre prénom"
+            placeholder="Ex: Jean"
             value={formData.prenom}
             onChange={handleChange}
             required
@@ -164,11 +159,11 @@ function App() {
         </div>
 
         <div className="form-group">
-          <label htmlFor="email">Email</label>
+          <label htmlFor="email">Email professionnel</label>
           <input
             id="email" name="email" type="email"
             className={errors.email ? 'invalid' : ''}
-            placeholder="exemple@mail.com"
+            placeholder="jean.dupont@exemple.com"
             value={formData.email}
             onChange={handleChange}
             required
@@ -181,7 +176,7 @@ function App() {
           <input
             id="motDePasse" name="motDePasse" type="password"
             className={errors.motDePasse ? 'invalid' : ''}
-            placeholder="Minimum 6 caractères"
+            placeholder="6 caractères minimum"
             value={formData.motDePasse}
             onChange={handleChange}
             required
@@ -203,9 +198,9 @@ function App() {
           {isSubmitting ? (
             <>
               <span className="spinner"></span>
-              Envoi en cours...
+              Traitement...
             </>
-          ) : "Envoyer ma demande"}
+          ) : "Créer mon compte"}
         </button>
       </form>
     </div>
