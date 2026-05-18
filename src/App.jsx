@@ -111,12 +111,13 @@ function App() {
         </div>
         <div className="container">
           <div className="success-container">
-          <div className="success-icon-wrapper">✓</div>
-          <h1>Succès !</h1>
-          <p className="subtitle">Votre demande a été enregistrée avec succès. Nous vous contacterons bientôt.</p>
-          <button onClick={() => setSubmitted(false)}>Retour au formulaire</button>
+            <div className="success-icon-wrapper">✓</div>
+            <h1>Succès !</h1>
+            <p className="subtitle">Votre demande a été enregistrée avec succès. Nous vous contacterons bientôt.</p>
+            <button onClick={() => setSubmitted(false)}>Retour au formulaire</button>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
@@ -129,91 +130,92 @@ function App() {
       )}
       <div className="container">
         <h1>Inscription</h1>
-      <p className="subtitle">Veuillez remplir les informations ci-dessous pour nous rejoindre.</p>
-      
-      {message && (
-        <div style={{ 
-          padding: '12px', marginBottom: '24px', borderRadius: '12px', 
-          backgroundColor: '#fff1f2', color: '#e11d48', textAlign: 'center',
-          fontSize: '0.9rem', fontWeight: '500', border: '1px solid #ffe4e6'
-        }}>
-          {message}
-        </div>
-      )}
+        <p className="subtitle">Veuillez remplir les informations ci-dessous pour nous rejoindre.</p>
+        
+        {message && (
+          <div style={{ 
+            padding: '12px', marginBottom: '24px', borderRadius: '12px', 
+            backgroundColor: '#fff1f2', color: '#e11d48', textAlign: 'center',
+            fontSize: '0.9rem', fontWeight: '500', border: '1px solid #ffe4e6'
+          }}>
+            {message}
+          </div>
+        )}
 
-      <form onSubmit={handleSubmit} noValidate>
-        <div className="form-group">
-          <label htmlFor="nom">Nom</label>
-          <input
-            id="nom" name="nom" type="text"
-            className={errors.nom ? 'invalid' : ''}
-            placeholder="Ex: Dupont"
-            value={formData.nom}
-            onChange={handleChange}
-            required
-          />
-          <div className="error-message">{errors.nom}</div>
-        </div>
+        <form onSubmit={handleSubmit} noValidate>
+          <div className="form-group">
+            <label htmlFor="nom">Nom</label>
+            <input
+              id="nom" name="nom" type="text"
+              className={errors.nom ? 'invalid' : ''}
+              placeholder="Ex: Dupont"
+              value={formData.nom}
+              onChange={handleChange}
+              required
+            />
+            <div className="error-message">{errors.nom}</div>
+          </div>
 
-        <div className="form-group">
-          <label htmlFor="prenom">Prénom</label>
-          <input
-            id="prenom" name="prenom" type="text"
-            className={errors.prenom ? 'invalid' : ''}
-            placeholder="Ex: Jean"
-            value={formData.prenom}
-            onChange={handleChange}
-            required
-          />
-          <div className="error-message">{errors.prenom}</div>
-        </div>
+          <div className="form-group">
+            <label htmlFor="prenom">Prénom</label>
+            <input
+              id="prenom" name="prenom" type="text"
+              className={errors.prenom ? 'invalid' : ''}
+              placeholder="Ex: Jean"
+              value={formData.prenom}
+              onChange={handleChange}
+              required
+            />
+            <div className="error-message">{errors.prenom}</div>
+          </div>
 
-        <div className="form-group">
-          <label htmlFor="email">Email professionnel</label>
-          <input
-            id="email" name="email" type="email"
-            className={errors.email ? 'invalid' : ''}
-            placeholder="jean.dupont@exemple.com"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
-          <div className="error-message">{errors.email}</div>
-        </div>
+          <div className="form-group">
+            <label htmlFor="email">Email professionnel</label>
+            <input
+              id="email" name="email" type="email"
+              className={errors.email ? 'invalid' : ''}
+              placeholder="jean.dupont@exemple.com"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
+            <div className="error-message">{errors.email}</div>
+          </div>
 
-        <div className="form-group">
-          <label htmlFor="motDePasse">Mot de passe</label>
-          <input
-            id="motDePasse" name="motDePasse" type="password"
-            className={errors.motDePasse ? 'invalid' : ''}
-            placeholder="6 caractères minimum"
-            value={formData.motDePasse}
-            onChange={handleChange}
-            required
-          />
-          <div className="error-message">{errors.motDePasse}</div>
-        </div>
+          <div className="form-group">
+            <label htmlFor="motDePasse">Mot de passe</label>
+            <input
+              id="motDePasse" name="motDePasse" type="password"
+              className={errors.motDePasse ? 'invalid' : ''}
+              placeholder="6 caractères minimum"
+              value={formData.motDePasse}
+              onChange={handleChange}
+              required
+            />
+            <div className="error-message">{errors.motDePasse}</div>
+          </div>
 
-        <div className="form-group">
-          <label htmlFor="sexe">Sexe</label>
-          <select id="sexe" name="sexe" value={formData.sexe} onChange={handleChange}>
-            <option value="femme">Femme</option>
-            <option value="homme">Homme</option>
-            <option value="autre">Autre</option>
-          </select>
-          <div className="error-message"></div>
-        </div>
+          <div className="form-group">
+            <label htmlFor="sexe">Sexe</label>
+            <select id="sexe" name="sexe" value={formData.sexe} onChange={handleChange}>
+              <option value="femme">Femme</option>
+              <option value="homme">Homme</option>
+              <option value="autre">Autre</option>
+            </select>
+            <div className="error-message"></div>
+          </div>
 
-        <button type="submit" disabled={isSubmitting || Object.values(errors).some(e => e)}>
-          {isSubmitting ? (
-            <>
-              <span className="spinner"></span>
-              Traitement...
-            </>
-          ) : "Créer mon compte"}
-        </button>
-      </form>
-    </div>
+          <button type="submit" disabled={isSubmitting || Object.values(errors).some(e => e)}>
+            {isSubmitting ? (
+              <>
+                <span className="spinner"></span>
+                Traitement...
+              </>
+            ) : "Créer mon compte"}
+          </button>
+        </form>
+      </div>
+    </>
   );
 }
 
