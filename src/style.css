@@ -113,9 +113,32 @@ h1 {
   flex: 1;
 }
 
-.form-group {
-  margin-bottom: 1rem; /* Réduit l'espace vertical */
+.password-input-wrapper {
   position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  width: auto;
+  margin-top: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.password-toggle:hover {
+  color: var(--accent);
+  background: none;
+  box-shadow: none;
+  transform: none;
 }
 
 label {

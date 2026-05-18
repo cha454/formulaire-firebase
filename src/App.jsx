@@ -9,6 +9,7 @@ function App() {
     prenom: '',
     email: '',
     motDePasse: '',
+    confirmerMotDePasse: '',
     sexe: 'femme',
   });
 
@@ -16,6 +17,7 @@ function App() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [message, setMessage] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   // Gestion de l'authentification au chargement
   useEffect(() => {
@@ -34,7 +36,7 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  const validateField = (name, value) => {
+  const validateField = (name, value, allData = formData) => {
     let error = '';
     switch (name) {
       case 'nom':
@@ -48,6 +50,9 @@ function App() {
       case 'motDePasse':
         if (value.length < 6) error = 'Minimum 6 caractères.';
         break;
+      case 'confirmerMotDePasse':
+        if (value !== allData.motDePasse) error = 'Les mots de passe ne correspondent pas.';
+        break;
       default:
         break;
     }
@@ -55,17 +60,32 @@ function App() {
   };
 
   const handleChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    const error = validateField(name, value);
+    let { name, value } = event.target;
+    
+    // Capitalisation automatique pour Nom et Prénom
+    if (name === 'nom' || name === 'prenom') {
+      value = value.charAt(0).toUpperCase() + value.slice(1);
+    }
+
+    const updatedData = { ...formData, [name]: value };
+    setFormData(updatedData);
+
+    // Validation en temps réel
+    const error = validateField(name, value, updatedData);
     setErrors((prev) => ({ ...prev, [name]: error }));
+
+    // Si on change le mot de passe, on re-valide la confirmation
+    if (name === 'motDePasse' && formData.confirmerMotDePasse) {
+      const confirmError = validateField('confirmerMotDePasse', formData.confirmerMotDePasse, updatedData);
+      setErrors((prev) => ({ ...prev, confirmerMotDePasse: confirmError }));
+    }
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const newErrors = {};
     Object.keys(formData).forEach(key => {
-      const error = validateField(key, formData[key]);
+      const error = validateField(key, formData[key], formData);
       if (error) newErrors[key] = error;
     });
 
@@ -88,13 +108,15 @@ function App() {
     }
 
     try {
+      // On n'enregistre pas confirmerMotDePasse dans la DB
+      const { confirmerMotDePasse, ...dataToSave } = formData;
       await addDoc(collection(db, "formulaire_contact"), {
-        ...formData,
+        ...dataToSave,
         createdAt: serverTimestamp(),
         userId: auth.currentUser.uid
       });
       setSubmitted(true);
-      setFormData({ nom: '', prenom: '', email: '', motDePasse: '', sexe: 'femme' });
+      setFormData({ nom: '', prenom: '', email: '', motDePasse: '', confirmerMotDePasse: '', sexe: 'femme' });
     } catch (error) {
       console.error("Erreur:", error);
       setMessage("Erreur lors de l'envoi. Veuillez réessayer.");
@@ -184,17 +206,43 @@ function App() {
             <div className="error-message">{errors.email}</div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="motDePasse">Mot de passe</label>
-            <input
-              id="motDePasse" name="motDePasse" type="password"
-              className={errors.motDePasse ? 'invalid' : ''}
-              placeholder="6 caractères minimum"
-              value={formData.motDePasse}
-              onChange={handleChange}
-              required
-            />
-            <div className="error-message">{errors.motDePasse}</div>
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="motDePasse">Mot de passe</label>
+              <div className="password-input-wrapper">
+                <input
+                  id="motDePasse" name="motDePasse" 
+                  type={showPassword ? "text" : "password"}
+                  className={errors.motDePasse ? 'invalid' : ''}
+                  placeholder="6+ caractères"
+                  value={formData.motDePasse}
+                  onChange={handleChange}
+                  required
+                />
+                <button 
+                  type="button" 
+                  className="password-toggle"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? "Masquer" : "Voir"}
+                </button>
+              </div>
+              <div className="error-message">{errors.motDePasse}</div>
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="confirmerMotDePasse">Confirmation</label>
+              <input
+                id="confirmerMotDePasse" name="confirmerMotDePasse" 
+                type={showPassword ? "text" : "password"}
+                className={errors.confirmerMotDePasse ? 'invalid' : ''}
+                placeholder="Répétez"
+                value={formData.confirmerMotDePasse}
+                onChange={handleChange}
+                required
+              />
+              <div className="error-message">{errors.confirmerMotDePasse}</div>
+            </div>
           </div>
 
           <div className="form-group">
