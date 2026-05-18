@@ -105,8 +105,12 @@ function App() {
 
   if (submitted) {
     return (
-      <div className="container">
-        <div className="success-container">
+      <>
+        <div className="marquee-container">
+          <div className="marquee-text">Merci de votre confiance — Inscription réussie — À bientôt !</div>
+        </div>
+        <div className="container">
+          <div className="success-container">
           <div className="success-icon-wrapper">✓</div>
           <h1>Succès !</h1>
           <p className="subtitle">Votre demande a été enregistrée avec succès. Nous vous contacterons bientôt.</p>
@@ -117,8 +121,14 @@ function App() {
   }
 
   return (
-    <div className="container">
-      <h1>Inscription</h1>
+    <>
+      {!submitted && (
+        <div className="marquee-container">
+          <div className="marquee-text">Bienvenue dans notre formulaire — Inscrivez-vous dès maintenant pour profiter de nos services — Bienvenue dans notre formulaire</div>
+        </div>
+      )}
+      <div className="container">
+        <h1>Inscription</h1>
       <p className="subtitle">Veuillez remplir les informations ci-dessous pour nous rejoindre.</p>
       
       {message && (

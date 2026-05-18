@@ -11,6 +11,32 @@
   --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 }
 
+.marquee-container {
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--primary);
+  color: white;
+  padding: 8px 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 0.9rem;
+  font-weight: 600;
+  z-index: 10;
+}
+
+.marquee-text {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 15s linear infinite;
+  padding-left: 100%;
+}
+
+@keyframes marquee {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(-100%, 0); }
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -21,6 +47,7 @@ body {
   align-items: center;
   min-height: 100vh;
   color: var(--text-main);
+  padding-top: 40px; /* Espace pour le bandeau défilant */
 }
 
 .container {
