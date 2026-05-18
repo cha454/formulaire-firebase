@@ -143,30 +143,32 @@ function App() {
         )}
 
         <form onSubmit={handleSubmit} noValidate>
-          <div className="form-group">
-            <label htmlFor="nom">Nom</label>
-            <input
-              id="nom" name="nom" type="text"
-              className={errors.nom ? 'invalid' : ''}
-              placeholder="Ex: Dupont"
-              value={formData.nom}
-              onChange={handleChange}
-              required
-            />
-            <div className="error-message">{errors.nom}</div>
-          </div>
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="nom">Nom</label>
+              <input
+                id="nom" name="nom" type="text"
+                className={errors.nom ? 'invalid' : ''}
+                placeholder="Ex: Dupont"
+                value={formData.nom}
+                onChange={handleChange}
+                required
+              />
+              <div className="error-message">{errors.nom}</div>
+            </div>
 
-          <div className="form-group">
-            <label htmlFor="prenom">Prénom</label>
-            <input
-              id="prenom" name="prenom" type="text"
-              className={errors.prenom ? 'invalid' : ''}
-              placeholder="Ex: Jean"
-              value={formData.prenom}
-              onChange={handleChange}
-              required
-            />
-            <div className="error-message">{errors.prenom}</div>
+            <div className="form-group">
+              <label htmlFor="prenom">Prénom</label>
+              <input
+                id="prenom" name="prenom" type="text"
+                className={errors.prenom ? 'invalid' : ''}
+                placeholder="Ex: Jean"
+                value={formData.prenom}
+                onChange={handleChange}
+                required
+              />
+              <div className="error-message">{errors.prenom}</div>
+            </div>
           </div>
 
           <div className="form-group">
